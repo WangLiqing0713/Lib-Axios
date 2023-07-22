@@ -85,3 +85,56 @@ document.querySelector('.list').addEventListener('click', e =>{
     })
   }
 })
+
+/*
+目标4：编辑图书
+4.1 编辑弹框->显示和隐藏
+4.2 获取当前编辑图书数据->回显到编辑表单中
+4.3 提交保存修改，并刷新列表
+*/
+
+// 4.1 编辑弹框->显示和隐藏
+const editDom = document.querySelector('.edit-modal')
+const editModal = new bootstrap.Modal(editDom)
+// 编辑元素->点击->弹框显示
+document.querySelector('.list').addEventListener('click', e =>{
+  // 判断是否为编辑元素
+  if(e.target.classList.contains('edit')){
+    //4.2 获取当前编辑图书数据->回显到编辑表单中
+    const theId = e.target.parentNode.dataset.id
+    axios({
+      url:`http://hmajax.itheima.net/api/books/${theId}`
+    }).then(result=>{
+      const bookObj = result.data.data
+      const keys = Object.keys(bookObj)
+      keys.forEach(key=>{
+      document.querySelector(`.edit-form .${key}`).value = bookObj[key]
+
+      })
+
+    })
+    editModal.show()
+  }
+})
+// 修改按钮->点击->隐藏弹框
+document.querySelector('.edit-btn').addEventListener('click',()=>{
+  //4.3 提交保存修改，并刷新列表
+  const editForm = document.querySelector('.edit-form')
+  const {id, bookname, author, publisher} = serialize(editForm,{hash:true,empty:true})
+
+  axios({
+    url:`http://hmajax.itheima.net/api/books/${id}`,
+    method:'PUT',
+    data:{
+      bookname,
+      author,
+      publisher,
+      creator
+    }
+  }).then(()=>{
+    getBookList()
+    editModal.hide()
+
+  })
+})
+
