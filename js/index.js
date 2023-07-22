@@ -21,7 +21,7 @@ function getBookList() {
       <td>${item.bookname}</td>
       <td>${item.author}</td>
       <td>${item.publisher}</td>
-      <td>
+      <td data-id=${item.id}>
         <span class="del">删除</span>
         <span class="edit">编辑</span>
       </td>
@@ -64,4 +64,24 @@ axios({
   // 隐藏弹框
   addModal.hide()
 })
+})
+/*
+目标3：删除图书
+3.1 删除元素绑定点击事件->获取图书id
+3.2 调用删除接口
+3.3 刷新图书列表
+*/
+// 3.1 删除元素绑定点击事件->获取图书id
+document.querySelector('.list').addEventListener('click', e =>{
+  if(e.target.classList.contains('del')){
+    const theId = e.target.parentNode.dataset.id
+// 3.2 调用删除接口
+    axios({
+      url:`http://hmajax.itheima.net/api/books/${theId}`,
+      method:'DELETE'
+    }).then(()=>{
+      getBookList()
+
+    })
+  }
 })
